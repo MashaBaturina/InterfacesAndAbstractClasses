@@ -29,17 +29,17 @@ namespace InterfacesAndAbstractClasses
         /// <summary>
         /// Plane speed increases up to 10 km/h every 10 km of flight 
         /// </summary>
-        private const double SpeedValueChangePerPeriodKmH = 10; 
+        private const double SpeedValueChangePerPeriodKmH = 10;
 
         /// <summary>
         /// Start coordinate
         /// </summary>
-        public Coordinate StartCoordinate { get; private set; }
+        public Coordinate StartCoordinate { get; set; }
 
         /// <summary>
         /// Destination coordinate
         /// </summary>
-        public Coordinate DestinationCoordinate { get; private set; }
+        public Coordinate DestinationCoordinate { get; set; }
 
         /// <summary>
         /// Start speed
@@ -96,22 +96,12 @@ namespace InterfacesAndAbstractClasses
         /// <returns>True if the object can fly to the destination point, false otherwise.</returns>
         public bool FlyTo(Coordinate destinationCoordinate)
         {
-            bool areCoordinatesPositive = CoordinateHelper.AreCoordinatesPositiveNumbers(destinationCoordinate);
+            double distance = Coordinate.GetDistance(StartCoordinate, destinationCoordinate);
 
-            if (areCoordinatesPositive)
+            if (distance >= MinDistanceKm && distance <= MaxDistanceKm)
             {
-                double distance = CoordinateHelper.GetDistance(StartCoordinate, destinationCoordinate);
-
-                if (distance >= MinDistanceKm && distance <= MaxDistanceKm)
-                {
-                    DestinationCoordinate = destinationCoordinate;
-                    return true;
-                }
-                else
-                {
-                    DestinationCoordinate = StartCoordinate;
-                    return false;
-                }
+                DestinationCoordinate = destinationCoordinate;
+                return true;
             }
             else
             {
@@ -127,23 +117,12 @@ namespace InterfacesAndAbstractClasses
         /// <returns>Fly time in hours</returns>
         public double GetFlyTime(Coordinate destinationCoordinate)
         {
-            double defaultFlyTime = 0.0;
-            bool areCoordinatesPositive = CoordinateHelper.AreCoordinatesPositiveNumbers(destinationCoordinate);
+            double distance = Coordinate.GetDistance(StartCoordinate, destinationCoordinate);
+            double finalSpeed = GetPlaneFinalSpeed(distance);
+            Acceleration = (Math.Pow(finalSpeed, 2) - Math.Pow(StartSpeed, 2)) / (distance * 2);
+            double flyTime = (finalSpeed - StartSpeed) / Acceleration;
 
-            if (areCoordinatesPositive)
-            {
-                double distance = CoordinateHelper.GetDistance(StartCoordinate, destinationCoordinate);
-                double finalSpeed = GetPlaneFinalSpeed(distance);
-                Acceleration = (Math.Pow(finalSpeed, 2) - Math.Pow(StartSpeed, 2)) / (distance * 2);
-                double flyTime = (finalSpeed - StartSpeed) / Acceleration;
-
-                return flyTime;
-            }
-            else
-            {
-                Console.WriteLine("Some coordinates are not positive numbers.");
-                return defaultFlyTime;
-            }
+            return flyTime;
         }
 
         /// <summary>

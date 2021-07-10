@@ -41,12 +41,12 @@ namespace InterfacesAndAbstractClasses
         /// <summary>
         /// Start coordinate
         /// </summary>
-        public Coordinate StartCoordinate { get; private set; }
+        public Coordinate StartCoordinate { get; set; }
 
         /// <summary>
         /// Destination coordinate
         /// </summary>
-        public Coordinate DestinitionCoordinate { get; private set; }
+        public Coordinate DestinitionCoordinate { get; set; }
 
         /// <summary>
         /// Speed 
@@ -118,30 +118,21 @@ namespace InterfacesAndAbstractClasses
         /// <returns>True if the object can fly to the destination point, false otherwise.</returns>
         public bool FlyTo(Coordinate destinitionCoordinate)
         {
-            bool areCoordinatesPositive = CoordinateHelper.AreCoordinatesPositiveNumbers(destinitionCoordinate);
 
-            if (areCoordinatesPositive)
+            double flyTime = GetFlyTime(destinitionCoordinate);
+
+            if (flyTime > GetMaxFlyTime())
             {
-                double flyTime = GetFlyTime(destinitionCoordinate);
+                Console.WriteLine($"The destination point is too far. Drone's maximum distance is {MaxDistanceKm} km.");
 
-                if (flyTime > GetMaxFlyTime())
-                {
-                    Console.WriteLine($"The destination point is too far. Drone's maximum distance is {MaxDistanceKm} km.");
+                DestinitionCoordinate = StartCoordinate;
 
-                    DestinitionCoordinate = StartCoordinate;
-
-                    return false;
-                }
-                else
-                {
-                    DestinitionCoordinate = destinitionCoordinate;
-                    return true;
-                }
+                return false;
             }
             else
             {
-                Console.WriteLine("Some coordinates are not positive numbers.");
-                return false;
+                DestinitionCoordinate = destinitionCoordinate;
+                return true;
             }
         }
 
@@ -150,26 +141,16 @@ namespace InterfacesAndAbstractClasses
         /// </summary>
         /// <param name="destinationCoordinate">Destination coordinate</param>
         /// <returns>Fly time in hours</returns>
-        public double GetFlyTime(Coordinate destinitionPosition)
+        public double GetFlyTime(Coordinate destinationPosition)
         {
-            double defaultFlyTime = 0.0;
-            bool areCoordinatesPositive = CoordinateHelper.AreCoordinatesPositiveNumbers(destinitionPosition);
 
-            if (areCoordinatesPositive)
-            {
-                double distance = CoordinateHelper.GetDistance(StartCoordinate, destinitionPosition);
-                double droneFlyTimeWithoutFreezes = distance / Speed;
-                int freezesQuantity = (int)(droneFlyTimeWithoutFreezes / FreezeFrequencyHours);
-                double droneFlyTimeWithFreezes = droneFlyTimeWithoutFreezes + freezesQuantity / MinPerHour;
+            double distance = Coordinate.GetDistance(StartCoordinate, destinationPosition);
+            double droneFlyTimeWithoutFreezes = distance / Speed;
+            int freezesQuantity = (int)(droneFlyTimeWithoutFreezes / FreezeFrequencyHours);
+            double droneFlyTimeWithFreezes = droneFlyTimeWithoutFreezes + freezesQuantity / MinPerHour;
 
-                return droneFlyTimeWithFreezes;
-            }
-            else
-            {
-                Console.WriteLine("Some coordinates are not positive numbers.");
+            return droneFlyTimeWithFreezes;
 
-                return defaultFlyTime;
-            }
         }
 
         /// <summary>
@@ -186,3 +167,4 @@ namespace InterfacesAndAbstractClasses
         }
     }
 }
+

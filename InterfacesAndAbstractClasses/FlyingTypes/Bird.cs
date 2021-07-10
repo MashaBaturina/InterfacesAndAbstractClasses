@@ -30,17 +30,17 @@ namespace InterfacesAndAbstractClasses
         /// <summary>
         /// Start coordinate
         /// </summary>
-        public Coordinate StartCoordinate { get; private set; }
+        public Coordinate StartCoordinate { get; set; }
 
         /// <summary>
         /// Destination coordinate
         /// </summary>
-        public Coordinate DestinationCoordinate { get; private set; }
+        public Coordinate DestinationCoordinate { get; set; }
 
         /// <summary>
         /// Speed
         /// </summary>
-        public int Speed { get; private set; }
+        public int Speed { get; set; }
 
         /// <summary>
         /// Specific time 
@@ -89,27 +89,18 @@ namespace InterfacesAndAbstractClasses
         /// <returns>True if the object can fly to the destination point, false otherwise.</returns>
         public bool FlyTo(Coordinate destinationCoordinate)
         {
-            bool areCoordinatesPositive = CoordinateHelper.AreCoordinatesPositiveNumbers(destinationCoordinate);
 
-            if (areCoordinatesPositive)
-            {
-                double distance = CoordinateHelper.GetDistance(StartCoordinate, destinationCoordinate);
+            double distance = Coordinate.GetDistance(StartCoordinate, destinationCoordinate);
 
-                if (distance <= MaxDistanceKm)
-                {
-                    DestinationCoordinate = destinationCoordinate;
-                    return true;
-                }
-                else
-                {
-                    DestinationCoordinate = StartCoordinate;
-                    return false;
-                }
-            }
-            else
+            if (distance <= MaxDistanceKm)
             {
                 DestinationCoordinate = destinationCoordinate;
                 return true;
+            }
+            else
+            {
+                DestinationCoordinate = StartCoordinate;
+                return false;
             }
         }
 
@@ -120,21 +111,10 @@ namespace InterfacesAndAbstractClasses
         /// <returns>Fly time (h)</returns>
         public double GetFlyTime(Coordinate destinationCoordinate)
         {
-            double defaultFlyTime = 0.0;
-            bool areCoordinatesPositive = CoordinateHelper.AreCoordinatesPositiveNumbers(destinationCoordinate);
+            double distance = Coordinate.GetDistance(StartCoordinate, destinationCoordinate);
+            double time = distance / Speed;
 
-            if (areCoordinatesPositive)
-            {
-                double distance = CoordinateHelper.GetDistance(StartCoordinate, destinationCoordinate);
-                double time = distance / Speed;
-
-                return time;
-            }
-            else
-            {
-                Console.WriteLine("Some coordinates are not positive numbers.");
-                return defaultFlyTime;
-            }
+            return time;
         }
 
         /// <summary>
